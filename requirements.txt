@@ -1,3 +1,3 @@
-Flask==2.3.2
-numpy==1.26.0
-opencv-python==4.9.0.73
+Flask
+numpy
+opencv-python
