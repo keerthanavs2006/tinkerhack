@@ -2,15 +2,15 @@
   <img src="./img.png" alt="Project Banner" width="100%">
 </p>
 
-# [SHE FEELS💕] 🎯
+# SHE FEELS💕 🎯
 
 ## Basic Details
 
-### Team Name: [N and k]
+### Team Name: N and K
 
 ### Team Members
-- Member 1: Nandana K- [gec kozhikode]
-- Member 2: keerthana V S - [gec kozhikode]
+- Member 1: Nandana K- gec kozhikode
+- Member 2: keerthana V S - gec kozhikode
 
 ### Hosted Project Link
 [mention your project hosted link here]
