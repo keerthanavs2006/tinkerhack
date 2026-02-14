@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Are You Feeling?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Reenie+Beanie&family=Quicksand:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #F0F9FF;
+            position: relative;
+            padding: 3rem 0;
+            overflow-x: hidden;
+        }
+
+        /* Hand-drawn doodle elements */
+        .doodle-line {
+            position: fixed;
+            stroke: #06B6D4;
+            stroke-width: 2;
+            fill: none;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .doodle-circle {
+            position: fixed;
+            border: 3px dashed #06B6D4;
+            border-radius: 50%;
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        .circle1 {
+            top: 10%;
+            left: 8%;
+            width: 120px;
+            height: 120px;
+        }
+
+        .circle2 {
+            bottom: 15%;
+            right: 10%;
+            width: 100px;
+            height: 100px;
+        }
+
+        .circle3 {
+            top: 50%;
+            right: 5%;
+            width: 80px;
+            height: 80px;
+        }
+
+        /* Floating cartoon illustrations */
+        .illustration {
+            position: fixed;
+            opacity: 0.15;
+            pointer-events: none;
+            font-size: 4rem;
+        }
+
+        .illustration1 { top: 8%; left: 12%; }
+        .illustration2 { top: 70%; right: 8%; }
+        .illustration3 { top: 35%; left: 5%; }
+        .illustration4 { bottom: 25%; right: 15%; }
+
+        /* Scattered small doodles */
+        .small-doodle {
+            position: fixed;
+            font-size: 1.5rem;
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        .sd1 { top: 20%; left: 25%; }
+        .sd2 { top: 60%; left: 15%; }
+        .sd3 { top: 15%; right: 20%; }
+        .sd4 { bottom: 30%; left: 20%; }
+        .sd5 { top: 45%; right: 12%; }
+
+        .container {
+            text-align: center;
+            padding: 4rem 6rem;
+            background: #FFFFFF;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(6, 182, 212, 0.15);
+            max-width: 1400px;
+            width: 95%;
+            position: relative;
+            z-index: 10;
+            margin: 2rem auto;
+            border: 2px solid #BAE6FD;
+        }
+
+        /* Hand-drawn corner decorations */
+        .corner-doodle {
+            position: absolute;
+            stroke: #06B6D4;
+            stroke-width: 2;
+            fill: none;
+            opacity: 0.3;
+        }
+
+        .corner-tl {
+            top: 15px;
+            left: 15px;
+            width: 60px;
+            height: 60px;
+        }
+
+        .corner-br {
+            bottom: 15px;
+            right: 15px;
+            width: 60px;
+            height: 60px;
+        }
+
+        .intro-banner {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #FFF8F3;
+            border-radius: 15px;
+            border: 2px dashed #E8B4B8;
+            position: relative;
+        }
+
+        .intro-banner::before {
+            content: '';
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23E8B4B8" opacity="0.3"/><circle cx="30" cy="40" r="8" fill="%23333"/><circle cx="70" cy="40" r="8" fill="%23333"/><path d="M 30 65 Q 50 75 70 65" stroke="%23333" stroke-width="3" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+        }
+
+        .intro-banner p {
+            font-size: 1.2rem;
+            color: #164E63;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        h1 {
+            color: #0891B2;
+            margin-bottom: 1rem;
+            font-size: 3.5rem;
+            font-family: 'Reenie Beanie', cursive;
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .subtitle {
+            color: #475569;
+            margin-bottom: 4rem;
+            font-size: 1.3rem;
+            font-weight: 400;
+        }
+
+        .mood-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+            margin-bottom: 3rem;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .mood-card {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid #BAE6FD;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Hand-drawn cartoon faces for each mood */
+        .mood-card::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.7;
+        }
+
+        .mood-card[data-mood="happy"]::before {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23FFF8F3" stroke="%23E8B4B8" stroke-width="3"/><circle cx="35" cy="40" r="5" fill="%23333"/><circle cx="65" cy="40" r="5" fill="%23333"/><path d="M 30 60 Q 50 75 70 60" stroke="%23333" stroke-width="3" fill="none"/></svg>');
+        }
+
+        .mood-card[data-mood="excited"]::before {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23FFF8F3" stroke="%23E8B4B8" stroke-width="3"/><circle cx="35" cy="35" r="7" fill="%23333"/><circle cx="65" cy="35" r="7" fill="%23333"/><circle cx="50" cy="60" r="12" fill="%23E8B4B8"/></svg>');
+        }
+
+        .mood-card[data-mood="calm"]::before {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23FFF8F3" stroke="%23E8B4B8" stroke-width="3"/><line x1="30" y1="40" x2="40" y2="40" stroke="%23333" stroke-width="3"/><line x1="60" y1="40" x2="70" y2="40" stroke="%23333" stroke-width="3"/><line x1="35" y1="60" x2="65" y2="60" stroke="%23333" stroke-width="3"/></svg>');
+        }
+
+        .mood-card[data-mood="tired"]::before {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23FFF8F3" stroke="%23E8B4B8" stroke-width="3"/><path d="M 30 40 L 35 35 L 40 40" stroke="%23333" stroke-width="3" fill="none"/><path d="M 60 40 L 65 35 L 70 40" stroke="%23333" stroke-width="3" fill="none"/><ellipse cx="50" cy="65" rx="15" ry="8" fill="none" stroke="%23333" stroke-width="2"/></svg>');
+        }
+
+        .mood-card[data-mood="anxious"]::before {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23FFF8F3" stroke="%23E8B4B8" stroke-width="3"/><circle cx="35" cy="40" r="6" fill="%23333"/><circle cx="65" cy="40" r="6" fill="%23333"/><path d="M 35 65 Q 50 55 65 65" stroke="%23333" stroke-width="3" fill="none"/></svg>');
+        }
+
+        .mood-card[data-mood="sad"]::before {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23FFF8F3" stroke="%23E8B4B8" stroke-width="3"/><circle cx="35" cy="40" r="5" fill="%23333"/><circle cx="65" cy="40" r="5" fill="%23333"/><path d="M 30 70 Q 50 60 70 70" stroke="%23333" stroke-width="3" fill="none"/><path d="M 28 45 Q 25 48 28 50" stroke="%2388C5E8" stroke-width="2" fill="none"/></svg>');
+        }
+
+        .mood-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(255, 138, 101, 0.2);
+            border-color: #06B6D4;
+        }
+
+        .mood-card.selected {
+            background: #F0F9FF;
+            transform: translateY(-10px);
+            border-color: #06B6D4;
+            box-shadow: 0 15px 30px rgba(255, 138, 101, 0.3);
+        }
+
+        .mood-card.selected .mood-emoji {
+            transform: scale(1.2);
+        }
+
+        .mood-card.selected .mood-label {
+            color: #0891B2;
+            font-weight: 700;
+        }
+
+        .mood-emoji {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 1rem;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        /* Hand-drawn cartoon illustrations for each mood */
+        .mood-card[data-mood="happy"] .mood-emoji {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" fill="%23FFF5F0" stroke="%23FF8A65" stroke-width="4"/><circle cx="70" cy="85" r="8" fill="%236B5B5C"/><circle cx="130" cy="85" r="8" fill="%236B5B5C"/><path d="M 60 120 Q 100 145 140 120" stroke="%23FF8A65" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="50" cy="70" r="15" fill="%23FF8A65" opacity="0.3"/><circle cx="150" cy="70" r="15" fill="%23FF8A65" opacity="0.3"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .mood-card[data-mood="excited"] .mood-emoji {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" fill="%23FFF5F0" stroke="%23FF8A65" stroke-width="4"/><circle cx="70" cy="80" r="10" fill="%236B5B5C"/><circle cx="130" cy="80" r="10" fill="%236B5B5C"/><ellipse cx="100" cy="120" rx="25" ry="30" fill="%23FF8A65"/><path d="M 40 50 L 50 40" stroke="%23FF8A65" stroke-width="4" stroke-linecap="round"/><path d="M 160 50 L 150 40" stroke="%23FF8A65" stroke-width="4" stroke-linecap="round"/><path d="M 35 65 L 25 60" stroke="%23FF8A65" stroke-width="4" stroke-linecap="round"/><path d="M 165 65 L 175 60" stroke="%23FF8A65" stroke-width="4" stroke-linecap="round"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .mood-card[data-mood="calm"] .mood-emoji {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" fill="%23FFF5F0" stroke="%23FF8A65" stroke-width="4"/><path d="M 60 85 Q 70 80 80 85" stroke="%236B5B5C" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M 120 85 Q 130 80 140 85" stroke="%236B5B5C" stroke-width="4" fill="none" stroke-linecap="round"/><line x1="70" y1="120" x2="130" y2="120" stroke="%23FF8A65" stroke-width="4" stroke-linecap="round"/><path d="M 50 50 Q 55 45 60 50" stroke="%23FF8A65" stroke-width="3" fill="none"/><path d="M 140 50 Q 145 45 150 50" stroke="%23FF8A65" stroke-width="3" fill="none"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .mood-card[data-mood="tired"] .mood-emoji {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" fill="%23FFF5F0" stroke="%23FF8A65" stroke-width="4"/><line x1="60" y1="85" x2="80" y2="85" stroke="%236B5B5C" stroke-width="4" stroke-linecap="round"/><line x1="120" y1="85" x2="140" y2="85" stroke="%236B5B5C" stroke-width="4" stroke-linecap="round"/><ellipse cx="100" cy="125" rx="30" ry="15" fill="none" stroke="%23FF8A65" stroke-width="3"/><path d="M 45 110 Q 40 115 45 120" stroke="%23FF8A65" stroke-width="3" fill="none"/><path d="M 155 110 Q 160 115 155 120" stroke="%23FF8A65" stroke-width="3" fill="none"/><text x="90" y="95" font-size="20" fill="%236B5B5C">Z z</text></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .mood-card[data-mood="anxious"] .mood-emoji {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" fill="%23FFF5F0" stroke="%23FF8A65" stroke-width="4"/><circle cx="70" cy="85" r="9" fill="%236B5B5C"/><circle cx="130" cy="85" r="9" fill="%236B5B5C"/><path d="M 65 125 Q 100 115 135 125" stroke="%23FF8A65" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M 55 70 L 50 65" stroke="%236B5B5C" stroke-width="3" stroke-linecap="round"/><path d="M 145 70 L 150 65" stroke="%236B5B5C" stroke-width="3" stroke-linecap="round"/><path d="M 40 95 Q 45 100 40 105" stroke="%23FF8A65" stroke-width="2" fill="none"/><path d="M 160 95 Q 155 100 160 105" stroke="%23FF8A65" stroke-width="2" fill="none"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .mood-card[data-mood="sad"] .mood-emoji {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" fill="%23FFF5F0" stroke="%23FF8A65" stroke-width="4"/><circle cx="70" cy="85" r="7" fill="%236B5B5C"/><circle cx="130" cy="85" r="7" fill="%236B5B5C"/><path d="M 65 135 Q 100 125 135 135" stroke="%23FF8A65" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M 55 70 Q 50 75 55 80" stroke="%236B5B5C" stroke-width="3" fill="none"/><path d="M 145 70 Q 150 75 145 80" stroke="%236B5B5C" stroke-width="3" fill="none"/><path d="M 50 90 L 48 110" stroke="%2388C5E8" stroke-width="3" stroke-linecap="round" opacity="0.6"/><circle cx="48" cy="112" r="3" fill="%2388C5E8" opacity="0.6"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .mood-label {
+            font-size: 1.5rem;
+            color: #164E63;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .confirmation {
+            display: none;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: #F0F9FF;
+            border-radius: 15px;
+            border: 2px dashed #06B6D4;
+            position: relative;
+        }
+
+        .confirmation.show {
+            display: block;
+        }
+
+        .confirmation p {
+            color: #164E63;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .confirmation small {
+            color: #475569;
+            font-size: 1rem;
+        }
+
+        .activity-page {
+            display: none;
+        }
+
+        .activity-page.show {
+            display: block;
+        }
+
+        .activity-page h2 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            font-family: 'Reenie Beanie', cursive;
+            color: #0891B2;
+            letter-spacing: 1px;
+        }
+
+        .activity-content {
+            background: #FFFFFF;
+            padding: 3rem;
+            border-radius: 15px;
+            margin-top: 2rem;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            border: 2px solid #BAE6FD;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .activity-content > p {
+            font-size: 1.2rem;
+            color: #164E63;
+            margin-bottom: 2rem;
+        }
+
+        .activity-list {
+            text-align: left;
+            margin: 2rem 0;
+        }
+
+        .activity-list li {
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: #F0F9FF;
+            border-radius: 12px;
+            list-style: none;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            border-left: 4px solid #06B6D4;
+            transition: all 0.3s ease;
+            color: #164E63;
+        }
+
+        .activity-list li:hover {
+            transform: translateX(8px);
+            box-shadow: 0 5px 15px rgba(255, 138, 101, 0.15);
+        }
+
+        .back-button {
+            background: #06B6D4;
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 138, 101, 0.3);
+        }
+
+        .back-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 138, 101, 0.4);
+            background: #0E7490;
+        }
+
+        /* Decorative hand-drawn arrows */
+        .arrow-doodle {
+            position: absolute;
+            opacity: 0.2;
+        }
+
+        .arrow1 {
+            top: 20%;
+            right: 5%;
+            width: 40px;
+            height: 40px;
+            stroke: #E8B4B8;
+            fill: none;
+            stroke-width: 2;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hand-drawn circles -->
+    <div class="doodle-circle circle1"></div>
+    <div class="doodle-circle circle2"></div>
+    <div class="doodle-circle circle3"></div>
+
+    <!-- Cartoon illustrations -->
+    <div class="illustration illustration1">
+        <svg width="80" height="80" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="40" fill="#F0F9FF" stroke="#06B6D4" stroke-width="3"/>
+            <circle cx="35" cy="45" r="5" fill="#333"/>
+            <circle cx="65" cy="45" r="5" fill="#333"/>
+            <path d="M 35 60 Q 50 70 65 60" stroke="#333" stroke-width="2" fill="none"/>
+        </svg>
+    </div>
+
+    <div class="illustration illustration2">
+        <svg width="80" height="80" viewBox="0 0 100 100">
+            <path d="M 50 20 L 60 45 L 85 45 L 65 60 L 75 85 L 50 70 L 25 85 L 35 60 L 15 45 L 40 45 Z" fill="#06B6D4" opacity="0.5"/>
+        </svg>
+    </div>
+
+    <div class="illustration illustration3">
+        <svg width="70" height="70" viewBox="0 0 100 100">
+            <path d="M 50 20 Q 70 50 50 80 Q 30 50 50 20" fill="#06B6D4" opacity="0.5"/>
+        </svg>
+    </div>
+
+    <div class="illustration illustration4">
+        <svg width="75" height="75" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="35" fill="none" stroke="#06B6D4" stroke-width="3" stroke-dasharray="5,5"/>
+            <circle cx="50" cy="50" r="20" fill="#F0F9FF" stroke="#06B6D4" stroke-width="2"/>
+        </svg>
+    </div>
+
+    <!-- Small scattered doodles -->
+    <div class="small-doodle sd1">✿</div>
+    <div class="small-doodle sd2">✦</div>
+    <div class="small-doodle sd3">❋</div>
+    <div class="small-doodle sd4">✤</div>
+    <div class="small-doodle sd5">✧</div>
+
+    <div class="container">
+        <!-- Corner decorations -->
+        <svg class="corner-doodle corner-tl">
+            <path d="M 5 5 L 5 55 M 5 5 L 55 5" stroke="#06B6D4" stroke-width="2"/>
+        </svg>
+        <svg class="corner-doodle corner-br">
+            <path d="M 55 55 L 55 5 M 55 55 L 5 55" stroke="#06B6D4" stroke-width="2"/>
+        </svg>
+
+        <!-- Main Mood Selection Page -->
+        <div id="moodSelection">
+            <div class="intro-banner">
+                <p>You've completed your activities! Take a moment to check in with yourself...</p>
+            </div>
+            
+            <h1>What's your mood now?</h1>
+            <p class="subtitle">Let's see how you're feeling after those activities</p>
+
+            <div class="mood-grid">
+                <div class="mood-card" data-mood="happy">
+                    <div class="mood-emoji"></div>
+                    <div class="mood-label">Happy</div>
+                </div>
+                <div class="mood-card" data-mood="excited">
+                    <div class="mood-emoji"></div>
+                    <div class="mood-label">Excited</div>
+                </div>
+                <div class="mood-card" data-mood="calm">
+                    <div class="mood-emoji"></div>
+                    <div class="mood-label">Calm</div>
+                </div>
+                <div class="mood-card" data-mood="tired">
+                    <div class="mood-emoji"></div>
+                    <div class="mood-label">Tired</div>
+                </div>
+                <div class="mood-card" data-mood="anxious">
+                    <div class="mood-emoji"></div>
+                    <div class="mood-label">Anxious</div>
+                </div>
+                <div class="mood-card" data-mood="sad">
+                    <div class="mood-emoji"></div>
+                    <div class="mood-label">Sad</div>
+                </div>
+            </div>
+
+            <div class="confirmation" id="confirmation">
+                <p id="confirmationText"></p>
+                <small>Redirecting you to personalized activities...</small>
+            </div>
+        </div>
+
+        <!-- Activity Pages (hidden by default) -->
+        <div id="happyPage" class="activity-page">
+            <h2>✨ That's wonderful! Let's keep the momentum!</h2>
+            <div class="activity-content">
+                <p>Here are some ways to maintain and build on your positive mood:</p>
+                <ul class="activity-list">
+                    <li>🎨 <strong>Create something:</strong> Draw, write, or make music</li>
+                    <li>🤸 <strong>Move your body:</strong> Dance, exercise, or go for a walk</li>
+                    <li>💌 <strong>Spread the joy:</strong> Send a message to someone you appreciate</li>
+                    <li>📸 <strong>Capture the moment:</strong> Take photos of things that make you smile</li>
+                </ul>
+                <button class="back-button" onclick="resetMood()">Choose Different Mood</button>
+            </div>
+        </div>
+
+        <div id="excitedPage" class="activity-page">
+            <h2>🚀 Amazing! Channel that excitement!</h2>
+            <div class="activity-content">
+                <p>Here's how to make the most of your energetic mood:</p>
+                <ul class="activity-list">
+                    <li>🎯 <strong>Start that project:</strong> Begin something you've been putting off</li>
+                    <li>🧗 <strong>Try something new:</strong> Learn a skill or explore a new hobby</li>
+                    <li>🎉 <strong>Plan an adventure:</strong> Organize a fun outing or event</li>
+                    <li>🤝 <strong>Connect with others:</strong> Call friends and share your enthusiasm</li>
+                </ul>
+                <button class="back-button" onclick="resetMood()">Choose Different Mood</button>
+            </div>
+        </div>
+
+        <div id="calmPage" class="activity-page">
+            <h2>🌿 Perfect. Let's embrace this peace.</h2>
+            <div class="activity-content">
+                <p>Activities to nurture your calm state:</p>
+                <ul class="activity-list">
+                    <li>📖 <strong>Read quietly:</strong> Dive into a book or article you enjoy</li>
+                    <li>🧘 <strong>Meditate:</strong> Practice mindfulness or deep breathing</li>
+                    <li>🌱 <strong>Connect with nature:</strong> Spend time outdoors or with plants</li>
+                    <li>☕ <strong>Enjoy a ritual:</strong> Make tea, journal, or do gentle stretches</li>
+                </ul>
+                <button class="back-button" onclick="resetMood()">Choose Different Mood</button>
+            </div>
+        </div>
+
+        <div id="tiredPage" class="activity-page">
+            <h2>💤 You deserve rest.</h2>
+            <div class="activity-content">
+                <p>Gentle activities for when you're low on energy:</p>
+                <ul class="activity-list">
+                    <li>🛌 <strong>Take a nap:</strong> Even 20 minutes can help recharge</li>
+                    <li>🎧 <strong>Listen to music:</strong> Put on your favorite relaxing playlist</li>
+                    <li>📺 <strong>Watch something light:</strong> Enjoy a comfort show or movie</li>
+                    <li>🍵 <strong>Hydrate & snack:</strong> Drink water and eat something nourishing</li>
+                </ul>
+                <button class="back-button" onclick="resetMood()">Choose Different Mood</button>
+            </div>
+        </div>
+
+        <div id="anxiousPage" class="activity-page">
+            <h2>🫂 It's okay. Let's ease this together.</h2>
+            <div class="activity-content">
+                <p>Calming activities to help ground you:</p>
+                <ul class="activity-list">
+                    <li>🌬️ <strong>Breathing exercises:</strong> Try 4-7-8 breathing (inhale 4, hold 7, exhale 8)</li>
+                    <li>📝 <strong>Brain dump:</strong> Write down what's on your mind without judgment</li>
+                    <li>🚶 <strong>Gentle movement:</strong> Take a slow walk or do light stretching</li>
+                    <li>🎵 <strong>Soothing sounds:</strong> Listen to calming music or nature sounds</li>
+                </ul>
+                <button class="back-button" onclick="resetMood()">Choose Different Mood</button>
+            </div>
+        </div>
+
+        <div id="sadPage" class="activity-page">
+            <h2>💙 Your feelings are valid.</h2>
+            <div class="activity-content">
+                <p>Gentle activities for difficult moments:</p>
+                <ul class="activity-list">
+                    <li>😢 <strong>Allow yourself to feel:</strong> It's okay to cry or sit with sadness</li>
+                    <li>💬 <strong>Reach out:</strong> Talk to someone you trust about how you feel</li>
+                    <li>🤗 <strong>Self-compassion:</strong> Treat yourself with kindness, like you would a friend</li>
+                    <li>🎨 <strong>Express creatively:</strong> Draw, write, or create to process emotions</li>
+                </ul>
+                <button class="back-button" onclick="resetMood()">Choose Different Mood</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const moodCards = document.querySelectorAll('.mood-card');
+        const confirmation = document.getElementById('confirmation');
+        const confirmationText = document.getElementById('confirmationText');
+        const moodSelection = document.getElementById('moodSelection');
+
+        const moodMessages = {
+            happy: "Great to hear you're feeling happy! 😊",
+            excited: "Awesome! The energy is still going strong! 🤗",
+            calm: "Wonderful, you've found your peace 😌",
+            tired: "That's okay, rest is important 😴",
+            anxious: "Let's work on easing that together 😰",
+            sad: "Your feelings matter, we're here for you 💙"
+        };
+
+        const moodPages = {
+            happy: 'happyPage',
+            excited: 'excitedPage',
+            calm: 'calmPage',
+            tired: 'tiredPage',
+            anxious: 'anxiousPage',
+            sad: 'sadPage'
+        };
+
+        moodCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const mood = card.dataset.mood;
+                
+                // Visual feedback
+                moodCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+
+                // Show confirmation
+                confirmationText.textContent = moodMessages[mood];
+                confirmation.classList.add('show');
+
+                // Redirect to activity page after 2 seconds
+                setTimeout(() => {
+                    moodSelection.style.display = 'none';
+                    document.getElementById(moodPages[mood]).classList.add('show');
+                }, 2000);
+            });
+        });
+
+        function resetMood() {
+            // Hide all activity pages
+            document.querySelectorAll('.activity-page').forEach(page => {
+                page.classList.remove('show');
+            });
+
+            // Reset mood selection
+            moodCards.forEach(c => c.classList.remove('selected'));
+            confirmation.classList.remove('show');
+            moodSelection.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

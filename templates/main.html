@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mood Detection</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+    background-image: url("{{ url_for('static', filename='Frame1.png') }}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .register-btn {
+      padding: 15px 35px;
+      font-size: 24px;
+      background-color: #ffdd33;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+    }
+
+    .register-btn:hover {
+      background-color: #ffe066;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <button class="register-btn" onclick="location.href='/go_index'">Register</button>
+</body>
+</html>

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Box Breathing Garden</title>
+<link href="https://fonts.googleapis.com/css2?family=Reenie+Beanie&family=Quicksand:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+    font-family: 'Quicksand', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #FFF4E6 0%, #FFE0B2 50%, #FFCC80 100%);
+    display: flex;
+    justify-content: center;
+    /* align-items: center;  <-- REMOVE this line */
+    position: relative;
+    overflow-y: auto;  /* enable vertical scrolling */
+    padding: 2rem 0;   /* give some space at top and bottom */
+}
+
+
+    /* Floating elements */
+    .floating-leaf {
+        position: fixed;
+        font-size: 2rem;
+        opacity: 0.2;
+        pointer-events: none;
+    }
+
+    .leaf1 { top: 10%; left: 10%; }
+    .leaf2 { top: 20%; right: 15%; }
+    .leaf3 { bottom: 15%; left: 20%; }
+    .leaf4 { bottom: 20%; right: 10%; }
+    .leaf5 { top: 50%; left: 5%; }
+    .leaf6 { top: 60%; right: 8%; }
+
+    /* End Session Button */
+    #endSessionBtn {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        padding: 14px 30px;
+        background: #FF7043;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        z-index: 1000;
+        box-shadow: 0 8px 20px rgba(6, 182, 212, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    #endSessionBtn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(6, 182, 212, 0.5);
+        background: #F4511E;
+    }
+
+    .container {
+        background: white;
+        padding: 3rem 4rem;
+        border-radius: 30px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 600px;
+        width: 90%;
+        border: 3px solid #FFE0B2;
+        position: relative;
+    }
+
+    h1 {
+        font-family: 'Reenie Beanie', cursive;
+        font-size: 3rem;
+        color: #F4511E;
+        margin-bottom: 1rem;
+        letter-spacing: 2px;
+    }
+
+    .subtitle {
+        color: #6D4C41;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+
+    /* Box Breathing Visualizer */
+    .box-container {
+        position: relative;
+        width: 280px;
+        height: 280px;
+        margin: 2rem auto;
+    }
+
+    .box {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 150px;
+        height: 150px;
+        transform: translate(-50%, -50%);
+        border: 4px dashed #FF7043;
+        border-radius: 15px;
+        transition: all 4s cubic-bezier(0.4, 0, 0.2, 1);
+        background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(8, 145, 178, 0.2) 100%);
+    }
+
+    .box.animate-inhale {
+        width: 250px;
+        height: 250px;
+        border-color: #FF9800;
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.2) 0%, rgba(6, 182, 212, 0.3) 100%);
+        box-shadow: 0 0 40px rgba(6, 182, 212, 0.5);
+    }
+
+    .box.animate-hold {
+        width: 250px;
+        height: 250px;
+        border-color: #FF6F00;
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(124, 58, 237, 0.3) 100%);
+        box-shadow: 0 0 40px rgba(139, 92, 246, 0.5);
+    }
+
+    .box.animate-exhale {
+        width: 150px;
+        height: 150px;
+        border-color: #FFB74D;
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.3) 100%);
+        box-shadow: 0 0 40px rgba(16, 185, 129, 0.5);
+    }
+
+    /* Breathing Ball */
+    .breathing-ball {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 60px;
+        height: 60px;
+        background: radial-gradient(circle, #FF7043 0%, #F4511E 100%);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: all 4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 0 30px rgba(6, 182, 212, 0.6);
+    }
+
+    .breathing-ball.animate-inhale {
+        width: 100px;
+        height: 100px;
+        background: radial-gradient(circle, #FF9800 0%, #FF7043 100%);
+    }
+
+    .breathing-ball.animate-hold {
+        width: 100px;
+        height: 100px;
+        background: radial-gradient(circle, #FF6F00 0%, #FB8C00 100%);
+        box-shadow: 0 0 40px rgba(139, 92, 246, 0.8);
+    }
+
+    .breathing-ball.animate-exhale {
+        width: 60px;
+        height: 60px;
+        background: radial-gradient(circle, #FFB74D 0%, #FFA726 100%);
+        box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
+    }
+
+    /* Particle dots around the box */
+    .particle {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: #FF7043;
+        border-radius: 50%;
+        opacity: 0.6;
+    }
+
+    .particle:nth-child(1) { top: 0; left: 0; }
+    .particle:nth-child(2) { top: 0; right: 0; }
+    .particle:nth-child(3) { bottom: 0; left: 0; }
+    .particle:nth-child(4) { bottom: 0; right: 0; }
+
+    .status-display {
+        margin: 2rem 0;
+    }
+
+    #status {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #F4511E;
+        font-family: 'Reenie Beanie', cursive;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+    }
+
+    #instruction {
+        font-size: 1.1rem;
+        color: #BF360C;
+        margin-bottom: 0.5rem;
+    }
+
+    #countdown {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #FF7043;
+        margin: 1rem 0;
+        font-family: 'Quicksand', sans-serif;
+    }
+
+    #timer {
+        font-size: 1rem;
+        color: #6D4C41;
+        opacity: 0.7;
+    }
+
+    .progress-bars {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        margin: 1.5rem 0;
+    }
+
+    .progress-bar {
+        width: 60px;
+        height: 8px;
+        background: #FFE0B2;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: #FF7043;
+        border-radius: 10px;
+        transition: width 4s linear;
+    }
+
+    .progress-fill.active {
+        width: 100%;
+    }
+
+    button {
+        padding: 16px 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 30px;
+        background: linear-gradient(135deg, #FF7043 0%, #F4511E 100%);
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(6, 182, 212, 0.3);
+        margin-top: 1rem;
+    }
+
+    button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(6, 182, 212, 0.4);
+    }
+
+    button:active {
+        transform: translateY(-1px);
+    }
+
+    .technique-info {
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background: #FFF8E1;
+        border-radius: 15px;
+        border: 2px dashed #FFE0B2;
+    }
+
+    .technique-info h3 {
+        color: #F4511E;
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .technique-info p {
+        color: #6D4C41;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+</style>
+</head>
+
+<body>
+    <!-- Floating warm elements -->
+    <div class="floating-leaf leaf1">☀️</div>
+    <div class="floating-leaf leaf2">🌼</div>
+    <div class="floating-leaf leaf3">🍊</div>
+    <div class="floating-leaf leaf4">🌻</div>
+    <div class="floating-leaf leaf5">🔆</div>
+    <div class="floating-leaf leaf6">🌺</div>
+
+    <!-- End Session Button -->
+    <button id="endSessionBtn">End Session</button>
+
+    <div class="container">
+        <h1>Box Breathing Sunshine ☀️</h1>
+        <p class="subtitle">Find your calm with the 4-4-4-4 technique</p>
+
+        <!-- Box Visualizer -->
+        <div class="box-container">
+            <div id="box" class="box">
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+            </div>
+            <div id="breathingBall" class="breathing-ball"></div>
+        </div>
+
+        <!-- Status Display -->
+        <div class="status-display">
+            <div id="status">Ready to Begin?</div>
+            <div id="instruction">Press start when you're ready</div>
+            <div id="countdown">4</div>
+            <div id="timer">00:00</div>
+        </div>
+
+        <!-- Progress Bars -->
+        <div class="progress-bars">
+            <div class="progress-bar">
+                <div id="progress1" class="progress-fill"></div>
+            </div>
+            <div class="progress-bar">
+                <div id="progress2" class="progress-fill"></div>
+            </div>
+            <div class="progress-bar">
+                <div id="progress3" class="progress-fill"></div>
+            </div>
+            <div class="progress-bar">
+                <div id="progress4" class="progress-fill"></div>
+            </div>
+        </div>
+
+        <button id="btn" onclick="toggle()">Start Breathing</button>
+
+        <!-- Technique Info -->
+        <div class="technique-info">
+            <h3>Box Breathing Technique</h3>
+            <p>Inhale for 4 seconds → Hold for 4 seconds → Exhale for 4 seconds → Hold for 4 seconds. This Navy SEAL technique calms your nervous system and improves focus.</p>
+        </div>
+    </div>
+
+    <script>
+        let running = false;
+        let seconds = 0;
+        let timerInterval;
+        let phaseInterval;
+        let countdownInterval;
+        let phase = 0; // 0: Inhale, 1: Hold, 2: Exhale, 3: Hold
+        let countdown = 4;
+
+        function toggle() {
+            if (!running) start();
+            else stop();
+        }
+
+        function start() {
+            running = true;
+            seconds = 0;
+            phase = 0;
+            countdown = 4;
+            
+            document.getElementById("btn").innerText = "Stop Breathing";
+            timerInterval = setInterval(updateTimer, 1000);
+            
+            // 4-second cycles for box breathing
+            phaseInterval = setInterval(breathCycle, 4000);
+            countdownInterval = setInterval(updateCountdown, 1000);
+            
+            breathCycle(); 
+        }
+
+        function stop() {
+            running = false;
+            clearInterval(timerInterval);
+            clearInterval(phaseInterval);
+            clearInterval(countdownInterval);
+            
+            document.getElementById("btn").innerText = "Start Breathing";
+            document.getElementById("status").innerText = "Session Complete ✨";
+            document.getElementById("instruction").innerText = "Great job! You're centered.";
+            document.getElementById("countdown").innerText = "4";
+            
+            // Reset animations
+            document.getElementById("box").className = "box";
+            document.getElementById("breathingBall").className = "breathing-ball";
+            
+            // Reset progress bars
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById("progress" + i).classList.remove("active");
+            }
+        }
+
+        function breathCycle() {
+            let status = document.getElementById("status");
+            let instruction = document.getElementById("instruction");
+            let box = document.getElementById("box");
+            let ball = document.getElementById("breathingBall");
+            
+            // Reset all progress bars
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById("progress" + i).classList.remove("active");
+            }
+            
+            // Activate current phase progress bar
+            setTimeout(() => {
+                document.getElementById("progress" + (phase + 1)).classList.add("active");
+            }, 50);
+
+            if (phase === 0) {
+                status.innerText = "Breathe In";
+                instruction.innerText = "Fill your lungs slowly and deeply";
+                box.className = "box animate-inhale";
+                ball.className = "breathing-ball animate-inhale";
+            } else if (phase === 1) {
+                status.innerText = "Hold";
+                instruction.innerText = "Keep the breath in, stay calm";
+                box.className = "box animate-hold";
+                ball.className = "breathing-ball animate-hold";
+            } else if (phase === 2) {
+                status.innerText = "Breathe Out";
+                instruction.innerText = "Release slowly and completely";
+                box.className = "box animate-exhale";
+                ball.className = "breathing-ball animate-exhale";
+            } else {
+                status.innerText = "Hold";
+                instruction.innerText = "Empty lungs, find stillness";
+                box.className = "box animate-exhale";
+                ball.className = "breathing-ball animate-exhale";
+            }
+
+            countdown = 4;
+            phase = (phase + 1) % 4;
+        }
+
+        function updateCountdown() {
+            countdown--;
+            if (countdown < 0) countdown = 0;
+            document.getElementById("countdown").innerText = countdown;
+        }
+
+        function updateTimer() {
+            seconds++;
+            let m = Math.floor(seconds / 60);
+            let s = seconds % 60;
+            document.getElementById("timer").innerText = 
+                String(m).padStart(2, '0') + ":" + String(s).padStart(2, '0');
+        }
+
+        document.getElementById("endSessionBtn").addEventListener("click", function() {
+            window.location.href = "/last";
+        });
+    </script>
+</body>
+</html>

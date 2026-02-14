@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Mode 🌈</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Chewy&display=swap');
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  min-height:100vh;
+  /* Using a vibrant gradient since local image paths vary by device */
+  background: linear-gradient(135deg, #C5E99B 0%, #F4F1BB 50%, #FFC9B5 100%);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:'Fredoka',sans-serif;
+  overflow-x:hidden;
+  position:relative;
+  padding:20px;
+}
+
+/* Floating doodle emojis */
+.float-emoji{
+  position:absolute;
+  font-size:2.5rem;
+  animation:float 6s infinite ease-in-out;
+  opacity:0.4;
+  pointer-events:none;
+}
+
+.float-emoji:nth-child(1){ top:10%; left:10%; animation-delay:0s; }
+.float-emoji:nth-child(2){ top:15%; right:12%; animation-delay:1.5s; }
+.float-emoji:nth-child(3){ bottom:20%; left:15%; animation-delay:3s; }
+.float-emoji:nth-child(4){ bottom:25%; right:18%; animation-delay:4.5s; }
+
+@keyframes float{
+  0%,100%{ transform:translateY(0) rotate(0deg); }
+  33%{ transform:translateY(-25px) rotate(8deg); }
+  66%{ transform:translateY(-15px) rotate(-8deg); }
+}
+
+.container{
+  width:95%;
+  max-width:1100px;
+  background:rgba(255,255,255,0.85);
+  backdrop-filter:blur(15px);
+  border-radius:35px;
+  padding:50px 40px;
+  box-shadow:0 25px 60px rgba(0,0,0,0.2);
+  position:relative;
+  z-index:10;
+  border:6px solid #2d3748;
+}
+
+header{
+  text-align:center;
+  margin-bottom:45px;
+}
+
+.big-emoji{
+  font-size:5rem;
+  display:inline-block;
+  animation:bounce 2s infinite;
+}
+
+@keyframes bounce{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-15px); }
+}
+
+header h1{
+  font-family:'Chewy',cursive;
+  font-size:3.5rem;
+  color:#2d3748;
+  margin:15px 0;
+  text-shadow:3px 3px 0 #FFE5B4;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:35px;
+}
+
+.card{
+  background:linear-gradient(135deg, #FFF8DC 0%, #FFEAA7 100%);
+  border-radius:30px;
+  padding:35px 30px;
+  box-shadow:10px 10px 0 rgba(0,0,0,0.15);
+  border:5px solid #2d3748;
+  cursor:pointer;
+  transition:all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  text-align: center;
+}
+
+.card:hover{
+  transform:translateY(-12px) rotate(-3deg);
+  box-shadow:15px 15px 0 rgba(0,0,0,0.25);
+}
+
+.icon{ font-size:4.5rem; display:block; margin-bottom:20px; }
+
+.btn{
+  margin-top: 15px;
+  padding:14px 30px;
+  border:4px solid #2d3748;
+  border-radius:50px;
+  background:#FFD93D;
+  font-weight:600;
+  cursor:pointer;
+}
+
+footer{
+  margin-top:40px;
+  text-align:center;
+  font-weight: bold;
+}
+</style>
+</head>
+<body>
+
+<div class="float-emoji">🌈</div>
+<div class="float-emoji">✨</div>
+<div class="float-emoji">🦋</div>
+<div class="float-emoji">🌸</div>
+
+<div class="container">
+  <header>
+    <div class="big-emoji">😄</div>
+    <h1>Yay! Happy Mode!</h1>
+    <p>Let's make today awesome! 🌟</p>
+  </header>
+
+  <div class="grid">
+    <div class="card" onclick="go('/journal')">
+      <div class="icon">📝</div>
+      <h2>Happy Journaling</h2>
+      <p>Write down all your happy thoughts and wins! 🌈</p>
+      <button class="btn">Start Writing ✍️</button>
+    </div>
+
+    <div class="card" onclick="go('/dumb')">
+      <div class="icon">🎨</div>
+      <h2>Doodling Magic</h2>
+      <p>Express your joy through silly doodles! 🖍️</p>
+      <button class="btn">Create Magic 🪄</button>
+    </div>
+  </div>
+
+  <footer>
+    🌸 Spread positivity • Stay joyful 🌸
+  </footer>
+</div>
+
+<script>
+function go(page){
+  document.body.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  document.body.style.opacity = '0';
+  document.body.style.transform = 'scale(0.9)';
+  
+  setTimeout(() => {
+    window.location.href = page;
+  }, 500);
+}
+</script>
+
+</body>
+</html>

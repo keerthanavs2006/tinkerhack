@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Draw Your Happy Mood</title>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background: #fff176; /* cheerful yellow background */
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+h1 {
+  color: #ff6f00;
+  text-shadow: 2px 2px 5px #ffe57f;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+canvas {
+  border: 5px solid #ffca28;
+  border-radius: 15px;
+  cursor: crosshair;
+  background: linear-gradient(145deg, #fffde7, #fff176);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
+
+canvas:hover {
+  transform: scale(1.02);
+}
+
+button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #ffeb3b;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  color: #ff6f00;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  transition: all 0.2s;
+}
+
+button:hover {
+  background-color: #fff176;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+/* End Session Button (fixed at bottom-right) */
+#endSessionBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 25px;
+  background-color: #ffeb3b; /* bright yellow to match theme */
+  color: #ff6f00;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  transition: all 0.2s;
+}
+
+#endSessionBtn:hover {
+  background-color: #fff176;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+</style>
+</head>
+<body>
+
+<h1>Draw Your Happy Mood! 😊</h1>
+<canvas id="doodleCanvas" width="700" height="500"></canvas>
+<button id="clearBtn">Clear Canvas</button>
+
+<!-- Persistent End Session Button -->
+<button id="endSessionBtn">End Session</button>
+
+<script>
+const canvas = document.getElementById("doodleCanvas");
+const ctx = canvas.getContext("2d");
+
+let isDrawing = false;
+let lastX = 0;
+let lastY = 0;
+let hue = 50; // start with happy yellow-ish hue
+
+function startDrawing(e) {
+  isDrawing = true;
+  const rect = canvas.getBoundingClientRect();
+  lastX = e.clientX - rect.left;
+  lastY = e.clientY - rect.top;
+}
+
+function stopDrawing() {
+  isDrawing = false;
+  ctx.beginPath();
+}
+
+function draw(e) {
+  if (!isDrawing) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  ctx.strokeStyle = `hsl(${hue}, 90%, 60%)`;
+  ctx.lineWidth = 8;
+  ctx.lineCap = "round";
+
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+  ctx.lineTo(x, y);
+  ctx.stroke();
+
+  lastX = x;
+  lastY = y;
+
+  hue += 3;
+  if (hue > 60) hue = 20; // keep it in sunny yellow-orange range
+}
+
+canvas.addEventListener("mousedown", startDrawing);
+canvas.addEventListener("mousemove", draw);
+canvas.addEventListener("mouseup", stopDrawing);
+canvas.addEventListener("mouseleave", stopDrawing);
+
+document.getElementById("clearBtn").addEventListener("click", () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+// End Session Button functionality
+document.getElementById("endSessionBtn").addEventListener("click", function() {
+    window.location.href = "/last";
+});
+</script>
+
+</body>
+</html>

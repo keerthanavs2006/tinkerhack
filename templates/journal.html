@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Journal</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #FFF5F7 0%, #FFE8EC 25%, #FFF0F5 50%, #F8E8EE 100%);
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow-x: hidden;
+    padding: 2rem;
+}
+
+/* Floating doodle decorations */
+.floating-doodle {
+    position: fixed;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.doodle-1 {
+    top: 5%;
+    left: 8%;
+    font-size: 3rem;
+}
+
+.doodle-2 {
+    top: 15%;
+    right: 10%;
+    font-size: 2.5rem;
+}
+
+.doodle-3 {
+    bottom: 10%;
+    left: 5%;
+    font-size: 2.8rem;
+}
+
+.doodle-4 {
+    bottom: 20%;
+    right: 8%;
+    font-size: 3.2rem;
+}
+
+.doodle-5 {
+    top: 40%;
+    left: 3%;
+    font-size: 2rem;
+}
+
+.doodle-6 {
+    top: 60%;
+    right: 5%;
+    font-size: 2.5rem;
+}
+
+/* Vintage newspaper elements */
+.vintage-element {
+    position: fixed;
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.newspaper-1 {
+    top: 10%;
+    left: 15%;
+    width: 120px;
+    height: 120px;
+    background: repeating-linear-gradient(0deg, #000 0px, #000 1px, transparent 1px, transparent 3px);
+    transform: rotate(-15deg);
+}
+
+.newspaper-2 {
+    bottom: 15%;
+    right: 12%;
+    width: 100px;
+    height: 100px;
+    background: repeating-linear-gradient(0deg, #000 0px, #000 1px, transparent 1px, transparent 3px);
+    transform: rotate(20deg);
+}
+
+.wrapper {
+    width: 95%;
+    max-width: 1000px;
+    display: flex;
+    gap: 25px;
+    position: relative;
+    z-index: 10;
+}
+
+.write-card {
+    flex: 2;
+    background: white;
+    padding: 35px;
+    border-radius: 25px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    border: 3px dashed #FFB6C1;
+    position: relative;
+    overflow: hidden;
+}
+
+.write-card::before {
+    content: '✿';
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 3rem;
+    opacity: 0.1;
+}
+
+.write-card::after {
+    content: '🦋';
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    font-size: 2rem;
+    opacity: 0.15;
+}
+
+.entries-card {
+    flex: 1;
+    background: rgba(255,255,255,0.95);
+    padding: 25px;
+    border-radius: 25px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    border: 3px dashed #DDA0DD;
+    display: none;
+    position: relative;
+}
+
+.entries-card::before {
+    content: '📖';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 2rem;
+    opacity: 0.15;
+}
+
+h1 {
+    margin-top: 0;
+    font-weight: 600;
+    color: #D87093;
+    font-family: 'Caveat', cursive;
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 0px rgba(255, 182, 193, 0.3);
+}
+
+.write-card p {
+    color: #888;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+textarea {
+    width: 100%;
+    height: 300px;
+    border-radius: 18px;
+    border: 2px solid #FFE4E1;
+    padding: 20px;
+    font-size: 15px;
+    font-family: 'Poppins', sans-serif;
+    resize: none;
+    outline: none;
+    background: linear-gradient(135deg, #FFFAFD 0%, #FFF5F8 100%);
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+}
+
+textarea:focus {
+    border-color: #FFB6C1;
+    box-shadow: 0 0 15px rgba(255, 182, 193, 0.3);
+    transform: scale(1.01);
+}
+
+button {
+    margin-top: 15px;
+    padding: 14px 40px;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #FF9EC9 0%, #FFB6D9 100%);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(255, 158, 201, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+button:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 158, 201, 0.5);
+}
+
+button:active {
+    transform: translateY(-1px);
+}
+
+#status {
+    margin-top: 12px;
+    font-weight: 500;
+    color: #FF69B4;
+    font-family: 'Caveat', cursive;
+    font-size: 1.3rem;
+}
+
+.entry {
+    background: linear-gradient(135deg, #FFF0F5 0%, #FFEBF0 100%);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid #FFE4E1;
+    position: relative;
+}
+
+.entry::before {
+    content: '♡';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: all 0.3s ease;
+    color: #FF69B4;
+}
+
+.entry:hover {
+    transform: translateX(-5px);
+    background: linear-gradient(135deg, #FFE4E1 0%, #FFD6E8 100%);
+    border-color: #FFB6C1;
+    box-shadow: 0 5px 15px rgba(255, 105, 180, 0.2);
+}
+
+.entry:hover::before {
+    opacity: 1;
+    right: 15px;
+}
+
+.viewer {
+    margin-top: 15px;
+    background: white;
+    border-radius: 15px;
+    padding: 18px;
+    min-height: 120px;
+    border: 2px dashed #FFE4E1;
+    color: #666;
+    line-height: 1.6;
+}
+
+#endSessionBtn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    padding: 14px 30px;
+    background: linear-gradient(135deg, #FF6B9D 0%, #FF8FB3 100%);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 8px 20px rgba(255, 107, 157, 0.4);
+    transition: all 0.3s ease;
+}
+
+#endSessionBtn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(255, 107, 157, 0.5);
+}
+
+/* Cute inline doodles */
+.inline-doodle {
+    display: inline-block;
+}
+</style>
+</head>
+
+<body>
+<!-- Floating doodles -->
+<div class="floating-doodle doodle-1">🌸</div>
+<div class="floating-doodle doodle-2">🦋</div>
+<div class="floating-doodle doodle-3">💐</div>
+<div class="floating-doodle doodle-4">🌺</div>
+<div class="floating-doodle doodle-5">✨</div>
+<div class="floating-doodle doodle-6">🎀</div>
+
+<!-- Vintage newspaper elements -->
+<div class="vintage-element newspaper-1"></div>
+<div class="vintage-element newspaper-2"></div>
+
+<!-- Persistent End Session Button -->
+<button id="endSessionBtn">End Session ✨</button>
+
+<div class="wrapper">
+
+  <!-- Writing Section -->
+  <div class="write-card">
+    <h1>✍️ My Journal</h1>
+    <p>Write freely. No judgement. Just honesty <span class="inline-doodle">💭</span></p>
+
+    <textarea id="text" placeholder="Pour your thoughts here... ✨"></textarea>
+
+    <button onclick="save()">Save Entry <span style="position: relative; z-index: 1;">💝</span></button>
+    <div id="status"></div>
+  </div>
+
+  <!-- Entries Section -->
+  <div class="entries-card" id="entriesCard">
+    <h1>📖 My Entries</h1>
+    <div id="entries"></div>
+    <div class="viewer" id="viewer">Click an entry to read it 💙</div>
+  </div>
+
+</div>
+
+<script>
+let journals = [];
+
+function save() {
+    let text = document.getElementById("text").value.trim();
+
+    if (text === "") {
+        document.getElementById("status").innerText = "Write something first 💭";
+        return;
+    }
+
+    let entry = {
+        content: text,
+        time: new Date().toLocaleString()
+    };
+
+    journals.unshift(entry);
+
+    document.getElementById("text").value = "";
+    document.getElementById("status").innerText = "Saved 💙";
+
+    document.getElementById("entriesCard").style.display = "block";
+
+    render();
+}
+
+function render() {
+    let list = document.getElementById("entries");
+    list.innerHTML = "";
+
+    journals.forEach((j, index) => {
+        let div = document.createElement("div");
+        div.className = "entry";
+        div.innerHTML = `
+          <strong>Entry ${journals.length - index}</strong><br>
+          <small>${j.time}</small>
+        `;
+
+        div.onclick = () => {
+            document.getElementById("viewer").innerText = j.content;
+        };
+
+        list.appendChild(div);
+    });
+}
+
+document.getElementById("endSessionBtn").addEventListener("click", function() {
+    window.location.href = "/last";
+});
+</script>
+
+</body>
+</html>

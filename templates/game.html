@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Relax Bubble Game</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url("{{ url_for('static', filename='image1.jpg') }}") no-repeat center center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+
+
+.container {
+    width: 430px;
+    height: 560px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 25px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+}
+
+h1 {
+    margin: 12px;
+}
+
+#rules {
+    font-size: 14px;
+    color: #666;
+}
+
+#score {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.game-area {
+    position: relative;
+    width: 100%;
+    height: 420px;
+    overflow: hidden;
+}
+
+.bubble {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ffffff, #66a6ff);
+    position: absolute;
+    bottom: -60px;
+    animation: floatUp linear;
+    cursor: pointer;
+}
+
+@keyframes floatUp {
+    from { transform: translateY(0); }
+    to { transform: translateY(-520px); }
+}
+
+#overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.97);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 25px;
+    padding: 25px;
+}
+
+#quote {
+    font-size: 18px;
+    margin: 15px 0;
+    font-weight: 600;
+    color: #444;
+}
+
+button {
+    padding: 10px 28px;
+    border: none;
+    border-radius: 12px;
+    background: #66a6ff;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #558de8;
+}
+</style>
+</head>
+
+<body>
+<!-- Persistent End Session Button -->
+<button id="endSessionBtn" style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 25px;
+    background-color: #4d8dc9;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 1000;
+">End Session</button>
+
+<div class="container">
+    <h1>🎈 Bubble Pop Relax Game</h1>
+    <div id="rules">Pop at least 25 bubbles out of 50 to win 💙</div>
+    <div id="score">Score: 0 / 50</div>
+
+    <div class="game-area" id="gameArea"></div>
+
+    <div id="overlay">
+        <h1 id="result"></h1>
+        <div id="quote"></div>
+        <button onclick="restart()">Play Again</button>
+    </div>
+</div>
+
+<script>
+let score = 0;
+let total = 0;
+const maxBubbles = 50;
+const winTarget = 25;
+let gameInterval;
+
+const quotesWin = [
+  "You didn’t just win the game, you proved your strength 💙",
+  "Small victories build big confidence 🌟",
+  "You handled this beautifully — keep going ✨",
+  "This calm energy suits you 🫂",
+  "You are capable of amazing things 🌈"
+];
+
+const quotesLose = [
+  "It’s okay — progress matters more than perfection 💛",
+  "Every try makes you stronger 🌱",
+  "You showed up, and that matters 💙",
+  "Healing takes time. Be gentle with yourself ✨",
+  "You are doing your best, and that is enough 🫂"
+];
+
+function startGame() {
+    gameInterval = setInterval(() => {
+        if (total >= maxBubbles) {
+            finishGame();
+            return;
+        }
+        createBubble();
+    }, 500);
+}
+
+function createBubble() {
+    total++;
+
+    let bubble = document.createElement("div");
+    bubble.className = "bubble";
+
+    let size = Math.random() * 20 + 40;
+    bubble.style.width = size + "px";
+    bubble.style.height = size + "px";
+
+    bubble.style.left = Math.random() * 85 + "%";
+
+    let speed = Math.random() * 2 + 5;
+
+    bubble.style.animationDuration = speed + "s";
+
+    // 🔥 SINGLE CLICK FIX
+    bubble.addEventListener("pointerdown", () => popBubble(bubble));
+
+    document.getElementById("gameArea").appendChild(bubble);
+
+    setTimeout(() => bubble.remove(), speed * 1000);
+}
+
+function popBubble(bubble) {
+    bubble.remove();
+    score++;
+    document.getElementById("score").innerText = 
+      "Score: " + score + " / " + maxBubbles;
+}
+
+function finishGame() {
+    clearInterval(gameInterval);
+
+    let win = score >= winTarget;
+
+    document.getElementById("overlay").style.display = "flex";
+
+    document.getElementById("result").innerText =
+      win ? "🎉 You Won!" : "💭 Keep Trying";
+
+    let q = win ? quotesWin : quotesLose;
+
+    document.getElementById("quote").innerText =
+      q[Math.floor(Math.random() * q.length)];
+}
+
+function restart() {
+    location.reload();
+}
+
+startGame();
+document.getElementById("endSessionBtn").addEventListener("click", function() {
+    window.location.href = "/last";
+});
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Face Mood Detector</title>
+    <style>
+        /* Body styling */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            background-color: #FFDAB9; /* soft peach background */
+            margin: 0;
+            padding: 0;
+            color: #333;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated background canvas */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Content wrapper to sit above canvas */
+        .content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Header */
+        h2 {
+            margin-top: 40px;
+            font-size: 36px;
+            color: #ff6f61; /* coral accent color */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+
+        /* Video container */
+        #video {
+            margin-top: 30px;
+            border: 5px solid #ffb347; /* pastel orange border */
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            max-width: 90%;
+        }
+
+        /* Button styling */
+        .btn {
+            padding: 12px 25px;
+            font-size: 18px;
+            margin: 15px 10px 0 10px;
+            cursor: pointer;
+            border-radius: 12px;
+            border: none;
+            font-weight: bold;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        /* Detect Mood Button */
+        .detect-btn {
+            background: linear-gradient(45deg, #ff6f61, #ffb347);
+            color: white;
+        }
+
+        .detect-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+        }
+
+        /* Happy Button */
+        .happy-btn {
+            background: #ff69b4; /* pink */
+            color: white;
+        }
+
+        .happy-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255,105,180,0.3);
+        }
+
+        /* Stressed Button */
+        .stressed-btn {
+            background: #1e90ff; /* blue */
+            color: white;
+        }
+
+        .stressed-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(30,144,255,0.3);
+        }
+
+        /* Result box */
+        #result {
+            margin-top: 30px;
+            font-size: 28px;
+            font-weight: bold;
+            padding: 15px 25px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        /* Responsive */
+        @media(max-width: 500px) {
+            h2 {
+                font-size: 28px;
+            }
+            #result {
+                font-size: 22px;
+            }
+            .btn {
+                font-size: 16px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div class="content">
+    <h2>Face Mood Detector</h2>
+
+    <video id="video" width="400" autoplay></video>
+    <br>
+
+    <!-- Original Detect Mood Button -->
+    <button class="btn detect-btn" onclick="capture()">Detect Mood</button>
+
+    <!-- Additional Happy and Stressed Buttons -->
+    <button class="btn happy-btn" onclick="goHappy()">I'm Happy 😊</button>
+    <button class="btn stressed-btn" onclick="goStressed()">I'm Stressed 😟</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+const video = document.getElementById("video");
+
+// Access camera
+navigator.mediaDevices.getUserMedia({ video: true })
+.then(stream => {
+    video.srcObject = stream;
+})
+.catch(err => {
+    alert("Camera access denied!");
+});
+
+// Capture and detect mood
+function capture() {
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0);
+
+    const imageData = canvas.toDataURL("image/jpeg");
+
+    fetch("/detect", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ image: imageData })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const mood = data.mood.toLowerCase();
+        document.getElementById("result").innerText = "Mood: " + data.mood;
+
+        // Optional: auto-redirect based on detected mood
+        if (mood === "happy") {
+            // window.location.href = "happy.html";
+        } else if (mood === "stress" || mood === "stressed") {
+            // window.location.href = "stressed.html";
+        }
+    })
+    .catch(error => {
+        document.getElementById("result").innerText = "Error detecting mood";
+    });
+}
+
+// Happy button redirect
+function goHappy() {
+    window.location.href = "/go_happy";
+}
+
+// Stressed button redirect
+function goStressed() {
+    window.location.href = "/go_stressed";
+}
+
+// ===== ANIMATED BACKGROUND =====
+const bgCanvas = document.getElementById('bg-canvas');
+const bgCtx = bgCanvas.getContext('2d');
+
+bgCanvas.width = window.innerWidth;
+bgCanvas.height = window.innerHeight;
+
+window.addEventListener('resize', () => {
+    bgCanvas.width = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
+});
+
+// Floating doodles
+class Doodle {
+    constructor() {
+        this.x = Math.random() * bgCanvas.width;
+        this.y = Math.random() * bgCanvas.height;
+        this.size = 30 + Math.random() * 40;
+        this.speedX = (Math.random() - 0.5) * 0.5;
+        this.speedY = (Math.random() - 0.5) * 0.5;
+        this.rotation = Math.random() * Math.PI * 2;
+        this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+        this.type = Math.floor(Math.random() * 5);
+        this.opacity = 0.15 + Math.random() * 0.15;
+    }
+
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.rotation += this.rotationSpeed;
+
+        if (this.x < -50) this.x = bgCanvas.width + 50;
+        if (this.x > bgCanvas.width + 50) this.x = -50;
+        if (this.y < -50) this.y = bgCanvas.height + 50;
+        if (this.y > bgCanvas.height + 50) this.y = -50;
+    }
+
+    draw() {
+        bgCtx.save();
+        bgCtx.translate(this.x, this.y);
+        bgCtx.rotate(this.rotation);
+        bgCtx.globalAlpha = this.opacity;
+
+        switch(this.type) {
+            case 0: // Happy face
+                bgCtx.strokeStyle = '#ff69b4';
+                bgCtx.lineWidth = 3;
+                bgCtx.beginPath();
+                bgCtx.arc(0, 0, this.size, 0, Math.PI * 2);
+                bgCtx.stroke();
+                // Eyes
+                bgCtx.fillStyle = '#ff69b4';
+                bgCtx.beginPath();
+                bgCtx.arc(-this.size/3, -this.size/4, this.size/8, 0, Math.PI * 2);
+                bgCtx.arc(this.size/3, -this.size/4, this.size/8, 0, Math.PI * 2);
+                bgCtx.fill();
+                // Smile
+                bgCtx.beginPath();
+                bgCtx.arc(0, this.size/6, this.size/2, 0, Math.PI);
+                bgCtx.stroke();
+                break;
+
+            case 1: // Sad/stressed face
+                bgCtx.strokeStyle = '#1e90ff';
+                bgCtx.lineWidth = 3;
+                bgCtx.beginPath();
+                bgCtx.arc(0, 0, this.size, 0, Math.PI * 2);
+                bgCtx.stroke();
+                // Eyes
+                bgCtx.fillStyle = '#1e90ff';
+                bgCtx.beginPath();
+                bgCtx.arc(-this.size/3, -this.size/4, this.size/8, 0, Math.PI * 2);
+                bgCtx.arc(this.size/3, -this.size/4, this.size/8, 0, Math.PI * 2);
+                bgCtx.fill();
+                // Frown
+                bgCtx.beginPath();
+                bgCtx.arc(0, this.size/2, this.size/2, Math.PI, 0);
+                bgCtx.stroke();
+                break;
+
+            case 2: // Camera icon
+                bgCtx.strokeStyle = '#ffb347';
+                bgCtx.fillStyle = '#ffb347';
+                bgCtx.lineWidth = 3;
+                bgCtx.strokeRect(-this.size/2, -this.size/3, this.size, this.size * 0.7);
+                bgCtx.fillRect(-this.size/3, -this.size/2, this.size * 0.3, this.size * 0.2);
+                bgCtx.beginPath();
+                bgCtx.arc(0, 0, this.size/3, 0, Math.PI * 2);
+                bgCtx.stroke();
+                break;
+
+            case 3: // Scan lines
+                bgCtx.strokeStyle = '#ff6f61';
+                bgCtx.lineWidth = 2;
+                for (let i = -this.size; i <= this.size; i += 8) {
+                    bgCtx.beginPath();
+                    bgCtx.moveTo(-this.size, i);
+                    bgCtx.lineTo(this.size, i);
+                    bgCtx.stroke();
+                }
+                break;
+
+            case 4: // Detection box
+                bgCtx.strokeStyle = '#9370db';
+                bgCtx.lineWidth = 3;
+                bgCtx.strokeRect(-this.size/2, -this.size/2, this.size, this.size);
+                // Corner markers
+                const cornerSize = this.size / 5;
+                bgCtx.beginPath();
+                bgCtx.moveTo(-this.size/2, -this.size/2 + cornerSize);
+                bgCtx.lineTo(-this.size/2, -this.size/2);
+                bgCtx.lineTo(-this.size/2 + cornerSize, -this.size/2);
+                bgCtx.moveTo(this.size/2 - cornerSize, -this.size/2);
+                bgCtx.lineTo(this.size/2, -this.size/2);
+                bgCtx.lineTo(this.size/2, -this.size/2 + cornerSize);
+                bgCtx.moveTo(this.size/2, this.size/2 - cornerSize);
+                bgCtx.lineTo(this.size/2, this.size/2);
+                bgCtx.lineTo(this.size/2 - cornerSize, this.size/2);
+                bgCtx.moveTo(-this.size/2 + cornerSize, this.size/2);
+                bgCtx.lineTo(-this.size/2, this.size/2);
+                bgCtx.lineTo(-this.size/2, this.size/2 - cornerSize);
+                bgCtx.stroke();
+                break;
+        }
+
+        bgCtx.restore();
+    }
+}
+
+// Create doodles
+const doodles = [];
+for (let i = 0; i < 15; i++) {
+    doodles.push(new Doodle());
+}
+
+// Pulse effect
+let pulsePhase = 0;
+
+function animate() {
+    bgCtx.fillStyle = '#FFDAB9';
+    bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+    // Draw subtle pulse circles
+    pulsePhase += 0.02;
+    for (let i = 0; i < 3; i++) {
+        const radius = (Math.sin(pulsePhase + i * 0.5) * 0.5 + 0.5) * 100 + 50;
+        bgCtx.beginPath();
+        bgCtx.arc(bgCanvas.width / 2, bgCanvas.height / 2, radius, 0, Math.PI * 2);
+        bgCtx.strokeStyle = `rgba(255, 111, 97, ${0.05 - i * 0.015})`;
+        bgCtx.lineWidth = 2;
+        bgCtx.stroke();
+    }
+
+    // Update and draw doodles
+    doodles.forEach(doodle => {
+        doodle.update();
+        doodle.draw();
+    });
+
+    requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+
+</body>
+</html>
